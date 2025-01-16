@@ -1,139 +1,158 @@
-const grid = document.getElementById("grid");
-const flagsLeftDisplay = document.getElementById("flagsLeft");
-const resultDisplay = document.getElementById("result");
+const gridSize = 10; // 10x10 grid
+const totalBombs = 10; // Total bombs
+let flagsLeft = totalBombs;
+let cellsRevealed = 0;
 
-let bombArray = [];
-let isGameOver = false;
-let flagCount = 10;
-let safeCellsClicked = 0;
+// Initialize the game
+const gameContainer = document.getElementById("game-container");
+const result = document.getElementById("result");
+const flagsLeftSpan = document.getElementById("flagsLeft");
 
-// Initialize the grid
-function createBoard() {
-  bombArray = generateBombPositions(10, 100); // 10 bombs in a 10x10 grid
-  for (let i = 0; i < 100; i++) {
+const cells = [];
+const bombs = new Set();
+
+// Generate the grid
+function generateGrid() {
+  for (let i = 0; i < gridSize * gridSize; i++) {
     const cell = document.createElement("div");
-    cell.setAttribute("id", i);
-    cell.classList.add("valid");
-    grid.appendChild(cell);
-    cell.addEventListener("click", () => handleClick(cell));
-    cell.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      toggleFlag(cell);
-    });
+    cell.id = i;
+    cell.className = "cell";
+    cell.dataset.value = 0; // Default value
+    cell.addEventListener("click", handleLeftClick);
+    cell.addEventListener("contextmenu", handleRightClick); // Flagging
+    gameContainer.appendChild(cell);
+    cells.push(cell);
   }
-  setBombCounts();
 }
 
-// Generate bomb positions
-function generateBombPositions(bombCount, totalCells) {
-  const positions = new Set();
-  while (positions.size < bombCount) {
-    positions.add(Math.floor(Math.random() * totalCells));
+// Place bombs randomly
+function placeBombs() {
+  while (bombs.size < totalBombs) {
+    const randomIndex = Math.floor(Math.random() * (gridSize * gridSize));
+    bombs.add(randomIndex);
   }
-  return Array.from(positions);
+
+  // Mark bombs and update neighbor counts
+  bombs.forEach((index) => {
+    cells[index].classList.add("bomb");
+    updateNeighborCounts(index);
+  });
 }
 
-// Set the bomb counts for each cell
-function setBombCounts() {
-  const cells = document.querySelectorAll("#grid div");
-  cells.forEach((cell, index) => {
-    if (bombArray.includes(index)) {
-      cell.classList.replace("valid", "bomb");
-    } else {
-      const bombCount = countBombsAround(index);
-      cell.setAttribute("data", bombCount);
+// Update the neighbor counts
+function updateNeighborCounts(index) {
+  const neighbors = getNeighbors(index);
+  neighbors.forEach((neighbor) => {
+    if (!bombs.has(neighbor)) {
+      cells[neighbor].dataset.value = parseInt(cells[neighbor].dataset.value) + 1;
     }
   });
 }
 
-// Count bombs around a cell
-function countBombsAround(index) {
-  const adjacentCells = getAdjacentCells(index);
-  return adjacentCells.filter((i) => bombArray.includes(i)).length;
+// Get neighbors of a cell
+function getNeighbors(index) {
+  const neighbors = [];
+  const row = Math.floor(index / gridSize);
+  const col = index % gridSize;
+
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      const newRow = row + i;
+      const newCol = col + j;
+      if (
+        newRow >= 0 &&
+        newRow < gridSize &&
+        newCol >= 0 &&
+        newCol < gridSize &&
+        !(i === 0 && j === 0)
+      ) {
+        neighbors.push(newRow * gridSize + newCol);
+      }
+    }
+  }
+
+  return neighbors;
 }
 
-// Get adjacent cells for a given index
-function getAdjacentCells(index) {
-  const isLeftEdge = index % 10 === 0;
-  const isRightEdge = (index + 1) % 10 === 0;
-  const adjacentIndices = [
-    index - 11, index - 10, index - 9,
-    index - 1,             index + 1,
-    index + 9, index + 10, index + 11
-  ];
+// Handle left click (reveal cell)
+function handleLeftClick(e) {
+  const cell = e.target;
 
-  return adjacentIndices.filter((i) => 
-    i >= 0 && i < 100 &&
-    !(isLeftEdge && [index - 11, index - 1, index + 9].includes(i)) &&
-    !(isRightEdge && [index - 9, index + 1, index + 11].includes(i))
-  );
-}
-
-// Handle left-click on a cell
-function handleClick(cell) {
-  if (isGameOver || cell.classList.contains("checked") || cell.classList.contains("flag")) return;
+  if (cell.classList.contains("checked") || cell.classList.contains("flag")) return;
 
   if (cell.classList.contains("bomb")) {
-    cell.textContent = "💣";
     revealAllBombs();
-    resultDisplay.textContent = "YOU LOSE!";
-    isGameOver = true;
+    result.textContent = "YOU LOSE!";
     return;
   }
 
   revealCell(cell);
-  checkWin();
+  checkWinCondition();
 }
 
 // Reveal a cell
 function revealCell(cell) {
-  if (cell.classList.contains("checked") || cell.classList.contains("flag")) return;
-  const bombCount = cell.getAttribute("data");
-  cell.classList.add("checked");
-  cell.textContent = bombCount > 0 ? bombCount : "";
-  safeCellsClicked++;
+  if (cell.classList.contains("checked")) return;
 
-  if (bombCount == 0) {
-    const adjacentCells = getAdjacentCells(parseInt(cell.id));
-    adjacentCells.forEach((i) => revealCell(document.getElementById(i)));
+  cell.classList.add("checked");
+  cell.textContent = cell.dataset.value;
+  cellsRevealed++;
+
+  if (cell.dataset.value === "0") {
+    const neighbors = getNeighbors(parseInt(cell.id));
+    neighbors.forEach((neighbor) => revealCell(cells[neighbor]));
   }
 }
 
-// Handle right-click (toggle flag)
-function toggleFlag(cell) {
-  if (isGameOver || cell.classList.contains("checked")) return;
+// Handle right click (flag cell)
+function handleRightClick(e) {
+  e.preventDefault();
+  const cell = e.target;
+
+  if (cell.classList.contains("checked")) return;
 
   if (cell.classList.contains("flag")) {
     cell.classList.remove("flag");
     cell.textContent = "";
-    flagCount++;
-  } else if (flagCount > 0) {
+    flagsLeft++;
+  } else if (flagsLeft > 0) {
     cell.classList.add("flag");
     cell.textContent = "🚩";
-    flagCount--;
+    flagsLeft--;
   }
 
-  flagsLeftDisplay.textContent = flagCount;
-  checkWin();
+  flagsLeftSpan.textContent = flagsLeft;
+  checkWinCondition();
 }
 
-// Reveal all bombs on game over
+// Reveal all bombs
 function revealAllBombs() {
-  bombArray.forEach((i) => {
-    const bombCell = document.getElementById(i);
-    bombCell.textContent = "💣";
+  bombs.forEach((index) => {
+    const bombCell = cells[index];
     bombCell.classList.add("checked");
+    bombCell.textContent = "💣";
   });
 }
 
-// Check if the player has won
-function checkWin() {
-  if (safeCellsClicked === 90 || bombArray.every((i) => document.getElementById(i).classList.contains("flag"))) {
-    resultDisplay.textContent = "YOU WIN!";
-    isGameOver = true;
+// Check win condition
+function checkWinCondition() {
+  if (cellsRevealed === gridSize * gridSize - totalBombs || flagsLeft === 0) {
+    let allFlagsCorrect = true;
+    bombs.forEach((index) => {
+      if (!cells[index].classList.contains("flag")) {
+        allFlagsCorrect = false;
+      }
+    });
+
+    if (allFlagsCorrect) {
+      result.textContent = "YOU WIN!";
+    }
   }
 }
 
 // Start the game
-createBoard();
+generateGrid();
+placeBombs();
+
+
 

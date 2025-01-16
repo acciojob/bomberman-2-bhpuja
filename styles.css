@@ -1,71 +1,72 @@
 /* General styling */
 body {
   font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  text-align: center;
+  background-color: #f4f4f9;
   margin: 0;
-  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
 }
 
 #game-container {
-  text-align: center;
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-gap: 2px;
+  justify-content: center;
+  margin: 20px auto;
 }
 
-#header {
-  margin-bottom: 20px;
+.cell {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  background-color: #ccc;
+  border: 1px solid #999;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cell.valid {
+  background-color: #eaeaea;
+}
+
+.cell.checked {
+  background-color: #d4d4d4;
+  cursor: default;
+}
+
+.cell.bomb {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.cell.flag {
+  background-color: #ffe066;
+  cursor: default;
+}
+
+#result {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 20px 0;
+  color: #333;
+}
+
+#controls {
+  margin-top: 10px;
 }
 
 #flagsLeft {
   font-weight: bold;
+  color: #ff0000;
 }
 
-/* Game grid styling */
-#grid {
-  display: grid;
-  grid-template-columns: repeat(10, 40px);
-  grid-gap: 2px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
 
-#grid div {
-  width: 40px;
-  height: 40px;
-  background-color: #ccc;
-  border: 1px solid #999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-}
-
-#grid div.valid {
-  background-color: #eee;
-}
-
-#grid div.checked {
-  background-color: #d0f0d0;
-  cursor: default;
-}
-
-#grid div.flag {
-  background-color: #ffe066;
-  color: #000;
-}
-
-#grid div.bomb {
-  background-color: #ff4d4d;
-  color: #fff;
-}
-
-/* Result styling */
-#result {
-  font-size: 18px;
-  font-weight: bold;
-}
 
