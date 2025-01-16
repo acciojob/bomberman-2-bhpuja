@@ -1,4 +1,4 @@
-/* Basic Styles for the game */
+/* General Styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
@@ -69,6 +69,3 @@ h1 {
 span {
   margin-top: 10px;
 }
-
-
-
