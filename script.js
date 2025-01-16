@@ -16,7 +16,7 @@ function generateGrid() {
   for (let i = 0; i < gridSize * gridSize; i++) {
     const cell = document.createElement("div");
     cell.id = i;
-    cell.className = "cell";
+    cell.className = "cell valid"; // Default to valid cell
     cell.dataset.value = 0; // Default value
     cell.addEventListener("click", handleLeftClick);
     cell.addEventListener("contextmenu", handleRightClick); // Flagging
@@ -34,6 +34,7 @@ function placeBombs() {
 
   // Mark bombs and update neighbor counts
   bombs.forEach((index) => {
+    cells[index].classList.remove("valid");
     cells[index].classList.add("bomb");
     updateNeighborCounts(index);
   });
@@ -153,6 +154,3 @@ function checkWinCondition() {
 // Start the game
 generateGrid();
 placeBombs();
-
-
-
