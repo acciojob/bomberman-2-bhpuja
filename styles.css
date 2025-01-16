@@ -1,19 +1,28 @@
-.grid-container {
-    margin: 20px;
-    display: grid;
-    grid-template-columns: auto auto auto;
-    padding: 10px;
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(10, 30px);
+  gap: 2px;
 }
-.grid-item {
-    /* background-color: rgba(255, 255, 255, 0.5); */
-    background-color: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    font-size: 30px;
-    text-align: center;
+
+#game-board div {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  border: 1px solid #ccc;
+  background-color: #ddd;
+  cursor: pointer;
 }
-.flex-box{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+#game-board div.valid.checked {
+  background-color: #fff;
+}
+
+#game-board div.bomb {
+  background-color: red;
+}
+
+#game-board div.flag {
+  background-color: yellow;
 }
