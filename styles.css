@@ -1,28 +1,71 @@
-#game-board {
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(10, 30px);
-  gap: 2px;
+/* General styling */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
 }
 
-#game-board div {
-  width: 30px;
-  height: 30px;
+#game-container {
   text-align: center;
-  line-height: 30px;
-  border: 1px solid #ccc;
-  background-color: #ddd;
+}
+
+#header {
+  margin-bottom: 20px;
+}
+
+#flagsLeft {
+  font-weight: bold;
+}
+
+/* Game grid styling */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(10, 40px);
+  grid-gap: 2px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#grid div {
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border: 1px solid #999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
+  user-select: none;
 }
 
-#game-board div.valid.checked {
-  background-color: #fff;
+#grid div.valid {
+  background-color: #eee;
 }
 
-#game-board div.bomb {
-  background-color: red;
+#grid div.checked {
+  background-color: #d0f0d0;
+  cursor: default;
 }
 
-#game-board div.flag {
-  background-color: yellow;
+#grid div.flag {
+  background-color: #ffe066;
+  color: #000;
 }
+
+#grid div.bomb {
+  background-color: #ff4d4d;
+  color: #fff;
+}
+
+/* Result styling */
+#result {
+  font-size: 18px;
+  font-weight: bold;
+}
+
