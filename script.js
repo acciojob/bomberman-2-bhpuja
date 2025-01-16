@@ -125,3 +125,4 @@ function checkWin() {
 
 // Start the game
 initializeGame();
+
