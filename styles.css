@@ -1,14 +1,14 @@
-/* General Styling */
+/* General styling */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #f7f7f7;
+  background-color: #f4f4f9;
   margin: 0;
   padding: 20px;
 }
 
 h1 {
-  margin-bottom: 10px;
+  margin: 0;
   font-size: 24px;
   color: #333;
 }
@@ -26,7 +26,7 @@ h1 {
   height: 30px;
   text-align: center;
   line-height: 30px;
-  background-color: #c4c4c4;
+  background-color: #ccc;
   border: 1px solid #999;
   border-radius: 5px;
   cursor: pointer;
@@ -34,11 +34,11 @@ h1 {
 }
 
 .cell.valid {
-  background-color: #e0e0e0;
+  background-color: #eaeaea;
 }
 
 .cell.checked {
-  background-color: #d0d0d0;
+  background-color: #d4d4d4;
   cursor: default;
 }
 
@@ -48,7 +48,7 @@ h1 {
 }
 
 .cell.flag {
-  background-color: #ffea85;
+  background-color: #ffe066;
   cursor: default;
 }
 
@@ -59,14 +59,13 @@ h1 {
   color: #333;
 }
 
-#flags-left {
-  font-size: 16px;
+#controls {
   margin-top: 10px;
-  color: #555;
 }
 
 #flagsLeft {
   font-weight: bold;
-  color: red;
+  color: #ff0000;
 }
+
 

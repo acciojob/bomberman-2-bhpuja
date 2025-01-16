@@ -4,7 +4,7 @@ const totalBombs = 10; // Total bombs
 let flagsLeft = totalBombs;
 let cellsRevealed = 0;
 
-// References
+// Initialize the game
 const gameContainer = document.getElementById("game-container");
 const result = document.getElementById("result");
 const flagsLeftSpan = document.getElementById("flagsLeft");
@@ -12,22 +12,15 @@ const flagsLeftSpan = document.getElementById("flagsLeft");
 const cells = [];
 const bombs = new Set();
 
-// Initialize the game
-function initGame() {
-  generateGrid();
-  placeBombs();
-  updateFlagCount();
-}
-
 // Generate the grid
 function generateGrid() {
   for (let i = 0; i < gridSize * gridSize; i++) {
     const cell = document.createElement("div");
     cell.id = i;
-    cell.className = "cell";
-    cell.dataset.value = 0; // Default bomb count
+    cell.className = "cell valid"; // Default to valid cell
+    cell.dataset.value = 0; // Default value
     cell.addEventListener("click", handleLeftClick);
-    cell.addEventListener("contextmenu", handleRightClick);
+    cell.addEventListener("contextmenu", handleRightClick); // Flagging
     gameContainer.appendChild(cell);
     cells.push(cell);
   }
@@ -36,23 +29,29 @@ function generateGrid() {
 // Place bombs randomly
 function placeBombs() {
   while (bombs.size < totalBombs) {
-    const randomIndex = Math.floor(Math.random() * gridSize * gridSize);
+    const randomIndex = Math.floor(Math.random() * (gridSize * gridSize));
     bombs.add(randomIndex);
   }
 
-  // Update neighboring cells' bomb counts
-  bombs.forEach((bombIndex) => {
-    cells[bombIndex].classList.add("bomb");
-    const neighbors = getNeighbors(bombIndex);
-    neighbors.forEach((neighbor) => {
-      if (!bombs.has(neighbor)) {
-        cells[neighbor].dataset.value = parseInt(cells[neighbor].dataset.value) + 1;
-      }
-    });
+  // Mark bombs and update neighbor counts
+  bombs.forEach((index) => {
+    cells[index].classList.remove("valid");
+    cells[index].classList.add("bomb");
+    updateNeighborCounts(index);
   });
 }
 
-// Get neighboring cells
+// Update the neighbor counts
+function updateNeighborCounts(index) {
+  const neighbors = getNeighbors(index);
+  neighbors.forEach((neighbor) => {
+    if (!bombs.has(neighbor)) {
+      cells[neighbor].dataset.value = parseInt(cells[neighbor].dataset.value) + 1;
+    }
+  });
+}
+
+// Get neighbors of a cell
 function getNeighbors(index) {
   const neighbors = [];
   const row = Math.floor(index / gridSize);
@@ -124,19 +123,14 @@ function handleRightClick(e) {
     flagsLeft--;
   }
 
-  updateFlagCount();
-  checkWinCondition();
-}
-
-// Update flag count
-function updateFlagCount() {
   flagsLeftSpan.textContent = flagsLeft;
+  checkWinCondition();
 }
 
 // Reveal all bombs
 function revealAllBombs() {
-  bombs.forEach((bombIndex) => {
-    const bombCell = cells[bombIndex];
+  bombs.forEach((index) => {
+    const bombCell = cells[index];
     bombCell.classList.add("checked");
     bombCell.textContent = "💣";
   });
@@ -146,9 +140,8 @@ function revealAllBombs() {
 function checkWinCondition() {
   if (cellsRevealed === gridSize * gridSize - totalBombs || flagsLeft === 0) {
     let allFlagsCorrect = true;
-
-    bombs.forEach((bombIndex) => {
-      if (!cells[bombIndex].classList.contains("flag")) {
+    bombs.forEach((index) => {
+      if (!cells[index].classList.contains("flag")) {
         allFlagsCorrect = false;
       }
     });
@@ -160,4 +153,5 @@ function checkWinCondition() {
 }
 
 // Start the game
-initGame();
+generateGrid();
+placeBombs();
